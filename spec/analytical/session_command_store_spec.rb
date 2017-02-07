@@ -1,12 +1,12 @@
 require 'spec_helper'
 
 describe Analytical::SessionCommandStore do
-  
+
   describe 'with a session hash' do
     before(:each) do
       @session = {}
     end
-    
+
     it 'should add elements' do
       @store = Analytical::SessionCommandStore.new @session, :some_module, ['a']
       @store << 'b'
@@ -30,7 +30,21 @@ describe Analytical::SessionCommandStore do
 
     it 'should set up the :analytical session hash' do
       @store = Analytical::SessionCommandStore.new @session, :some_module, ['a', 'b']
-      @session[:analytical_some_module].should_not be_nil   
+      @session[:analytical_some_module].should_not be_nil
+    end
+
+    it 'should discard older items when the store is full' do
+      large_item = [
+        "set",
+        {
+          "I have some key" => "and a long param",
+          "and more key" => "and some more value",
+          "so much key" => "such such value",
+        },
+      ]
+      @store = Analytical::SessionCommandStore.new @session, :some_module, [large_item] * 100
+      @session[:analytical_some_module].should_not be_nil
+      @session[:analytical_some_module].inspect.length.should be < 1000
     end
 
     describe 'when flushing' do
@@ -55,5 +69,5 @@ describe Analytical::SessionCommandStore do
       end
     end
   end
-  
+
 end
