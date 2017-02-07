@@ -16,7 +16,7 @@ module Analytical
       end
 
       def init_javascript(location)
-        dataLayer = [{ ga_id: options[:key]}];
+        dataLayer = [{ ga_id: options[:ua_key] || options[:key]}];
 
         init_location(location) do
           case location.to_sym
